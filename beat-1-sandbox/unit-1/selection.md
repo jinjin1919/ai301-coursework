@@ -15,23 +15,86 @@ wrong label is not graded.
 
 **Issue link**
 
-[The individual Path Review issue page. A link to the repository or the issue list
-does not satisfy this field.]
+issue # 15 
+https://github.com/codepath/pathreview-ai301-fa26-s3/issues/15
 
 **Verdict output**
 
-[Your skill's live-mode output for this issue, pasted verbatim and ending with the
-fenced JSON verdict block. A summary does not satisfy this field.]
+ranks based on Verdict in rubric.md
 
-**The verdict must record `accept` for this issue.** Choose an issue your own skill
-accepts. If your skill rejects every candidate you try, that is a signal about your
-rubric rather than about the issues: revise it and re-run — retries are unlimited and a
-partial re-run costs about $0.20 — or run the skill on different candidates. Output
-recording `reject` for the issue you chose earns no credit for this field.
-
-```
-paste the output here, including the closing JSON block
-```
+1. #15 – clears Orchestrator/ContextManager/session-store cache between runs — core agent-orchestration internals, closest to your target skill.
+2. #16 – wires failed tool_results entries into the review output — also core orchestrator/tool-call plumbing.
+3. #20 – new DependencyAuditTool parsing requirements.txt/package.json/pyproject.toml for outdated majors — 
+   deployment-adjacent (dependency/version auditing) new tool.                #19 – new contribution_streak tool on github_tool.py — agent tool work, but asimpler data feature, less orchestration/deployment flavor.#57 – bug fix in tech_detector.py path filtering — smallest, mostutility-bugfix in nature, least tied to orchestration/deployment.
+                                                                     
+    "item": "https://github.com/codepath/pathreview-ai301-fa26-s3/iss "checks": [
+      {"name": "maintainer-alive", "grade": "pass", "evidence": "Newest of last 5ault-branch commits is 2026-09-16, within 90 days of today (2026-09-20)"},
+      {"name": "repo-in-use", "grade": "pass", "evidence": "archived:est commit 2026-09-16 is within 90 days"},
+      {"name": "scope-bounded", "grade": "pass", "evidence": "Single fix: emptytextManager cache and clear session state on run start, 3 named files, 3-4himate"},   {"name": "unclaimed", "grade": "pass", "evidence": "assignees: []; noments; no linked PRs"},
+      {"name": "policy-allows-ai", "grade": "pass", "evidence": "No  TRIBUTING.md/AGENTS.md/AI policy file found (404s) — silence"},
+      {"name": "release-recent", "grade": "fail", "evidence": "Releases APIurned 0 releases"},
+      {"name": "maintainer-filed", "grade": "pass", "evidence": "openrke225, author_association: COLLABORATOR"},
+      {"name": "fits-my-profile", "grade": "pass", "evidence": "Pythont-orchestrator session/state handling — matches agent-orchestration focus"}
+    ],
+    "verdict": "accept"
+  },
+  {
+    "item": "https://github.com/codepath/pathreview-ai301-fa26-s3/issues/16",
+    "checks": [                                                                         {"name": "maintainer-alive", "grade": "pass", "evidence": "Newest of last 5ault-branch commits is 2026-09-16, within 90 days of today"},
+      {"name": "repo-in-use", "grade": "pass", "evidence": "archived:est commit within 90 days"},
+      {"name": "scope-bounded", "grade": "pass", "evidence": "Single fix: surfacefailed tool_results entries into review output, 2 named files, 4-6h estimate"},      {"name": "unclaimed", "grade": "pass", "evidence": "assignees: []; nocomments; no linked PRs"},
+      {"name": "policy-allows-ai", "grade": "pass", "evidence": "No policy ffound — silence"},
+      {"name": "release-recent", "grade": "fail", "evidence": "0 releases found"      {"name": "maintainer-filed", "grade": "pass", "evidence": "opened by
+Aburke225, COLLABORATOR"},                                                        {"name": "fits-my-profile", "grade": "pass", "evidence": "Python,orchestrator/tool-result plumbing — core agent-framework work"}    ],
+    "verdict": "accept"                                                       },
+  {                                                                                 "item": "https://github.com/codepath/pathreview-ai301-fa26-s3/issues/20",
+    "checks": [                                                                   {"name": "maintainer-alive", "grade": "pass", "evidence": "Newest of last 5
+default-branch commits is 2026-09-16, within 90 days of today"},                      {"name": "repo-in-use", "grade": "pass", "evidence": "archived: false;
+newest commit within 90 days"},                                                   {"name": "scope-bounded", "grade": "pass", "evidence": "Single new tool with
+clear spec (parse manifest files, flag major-version-behind deps), named files, 5-8h estimate"},
+      {"name": "unclaimed", "grade": "pass", "evidence": "assignees: []; nocomments; no linked PRs"},
+      {"name": "policy-allows-ai", "grade": "pass", "evidence": "No policy ffound — silence"},      {"name": "release-recent", "grade": "fail", "evidence": "0 releases found"},      {"name": "maintainer-filed", "grade": "pass", "evidence": "opened byAburke225, COLLABORATOR"},
+      {"name": "fits-my-profile", "grade": "pass", "evidence": "Python, new tool auditing dependency/package files — deployment-adjacent subject matter"}
+    ],                                                                          
+    "verdict": "accept"
+  },
+  {
+    "item": "https://github.com/codepath/pathreview-ai301-fa26-s3/issues/19",
+    "checks": [
+      {"name": "maintainer-alive", "grade": "pass", "evidence": "Newest of last 5
+default-branch commits is 2026-09-16, within 90 days of today"},
+      {"name": "repo-in-use", "grade": "pass", "evidence": "archived: false;
+newest commit within 90 days"},
+      {"name": "scope-bounded", "grade": "pass", "evidence": "Single new tool with
+clear spec (longest consecutive commit-streak calc), one named file, 4-6h
+estimate"},
+      {"name": "unclaimed", "grade": "pass", "evidence": "assignees: []; no
+comments; no linked PRs"},
+      {"name": "policy-allows-ai", "grade": "pass", "evidence": "No policy file
+found — silence"},
+      {"name": "release-recent", "grade": "fail", "evidence": "0 releases found"},
+      {"name": "maintainer-filed", "grade": "pass", "evidence": "opened by
+Aburke225, COLLABORATOR"},
+      {"name": "fits-my-profile", "grade": "pass", "evidence": "Python agent tool,
+but a standalone data feature rather than orchestration/deployment work"}
+    ],
+    "verdict": "accept"
+  },                                                                                {
+    "item": "https://github.com/codepath/pathreview-ai301-fa26-s3/issues/57",    "checks": [
+      {"name": "maintainer-alive", "grade": "pass", "evidence": "Newest of last 5 
+default-branch commits is 2026-09-16, within 90 days of today"},
+      {"name": "repo-in-use", "grade": "pass", "evidence": "archived: false;
+newest commit within 90 days"},
+      {"name": "scope-bounded", "grade": "pass", "evidence": "Single bug fix withrepro steps and named failing tests, one file (tech_detector.py)"},
+      {"name": "unclaimed", "grade": "pass", "evidence": "assignees: []; no comments; no linked PRs"},
+      {"name": "policy-allows-ai", "grade": "pass", "evidence": "No policy file found — silence"},
+      {"name": "release-recent", "grade": "fail", "evidence": "0 releases found"},
+      {"name": "maintainer-filed", "grade": "pass", "evidence": "opened by Aburke225, COLLABORATOR"},
+      {"name": "fits-my-profile", "grade": "pass", "evidence": "Python, but a path-filtering bugfix — least tied to orchestration or deployment focus"}
+    ],
+    "verdict": "accept"
+  }
+]
 
 ---
 
@@ -41,27 +104,56 @@ Quote source text directly in each field below. Paraphrase does not satisfy them
 
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+3 runs: 
+
+first smoke run:  python3.12 run_eval.py --rubric ../skill/rubric.md --limit 3
+
+grading 3 bundle(s) with rubric.md, model sonnet, 5 worker(s)...
+  issue-03: reject
+  issue-02: reject
+  issue-01: accept
+
+item      gold    verdict  agree  note
+issue-01  accept  accept   yes    
+issue-02  reject  reject   yes    
+issue-03  reject  reject   yes    
+
+agreement: 3/3 scored items
+
+then did a full on 20 issues: python3.12 run_eval.py --rubric ../skill/rubric.md
+
+then did a 3 issues `--only` run: 
+python3.12 run_eval.py --rubric ../skill/rubric.md --only issue-04,issue-15
+
+One last run save to eval-run.txt: `agreement: 18/20 scored items  (bar: 18/20: PASS)`
 
 **Issue analysis**
 
-[One scored issue, identified by id (`issue-01` through `issue-20`; the `calib-`
-issues are not scored). State your rubric's decision, the gold label, and the
-reasoning that produced your rubric's result.]
+`issue-04` — my rubric's decision: **reject** (gold: **accept**). my verdict My `scope-bounded` check failed it because the body lists several named rule types and
+ends in "etc.," which reads like an open-ended list rather than one deliverable. The
+gold note calls it a "small active repo, maintainer-filed bounded bug, unclaimed" 
 
 **Check rationale**
 
-[One check from the `rubric.md` uploaded to `tools/issue-select/`, quoted as it is
-currently written, with the reasoning behind its current form.]
+for `scope-bounded`
+
+I wrote the (a)/(b) fail conditions to catch tracking issues and copy-paste-style
+work spread over the whole codebase, which is what actually turns a "first issue"
+into a multi-week slog. I wrote the "Explicitly NOT fails" carve-outs after noticing
+that length and itemization are not the same as unboundedness — a maintainer who
+writes a precise plan or names several files for one deliverable is making the issue
+*more* tractable, not less, so I didn't want the check to punish detail.
 
 **Trade-offs**
 
-[What the quoted check gives up. Any one of these is a complete answer: an issue whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
+The carve-out I wrote protects "naming several files that serve one deliverable," but
+`issue-04` shows it doesn't yet protect "naming several instances of the same missing
+case within one file/feature" — a list of rule names ending in "etc." still trips
+condition (b) because nothing in the check tells apart "repeated edit across unrelated
+modules" from "the same fix applied to several instances of one concept." That's a
+case I'm accepting the current wording will keep missing: any bug report that lists
+multiple examples of one class of bug (rather than one file per unrelated module) is
+at risk of a false `scope-bounded` fail until I add an explicit exception for it.
 
 ---
 
@@ -73,12 +165,27 @@ This is also the basis for the claim comment you write in Unit 2.
 
 **Selection rationale**
 
-[Answer all three:
-
-1. The issue's fit to your interests and to the time available.
-2. What the verdict identified correctly, and what you weighed that the rubric could
-   not.
-3. The anticipated difficulty in claiming it.]
+1. Issue #15 is Python work inside the agent's own orchestrator (session/context
+   caching between reviews), which sits squarely in the agent-orchestration track
+   I'm trying to get reps in, not a CRUD or frontend task. The 3-4 hour estimate and
+   `tier-1`/`good first issue` labels fit the time I actually have for a first
+   contribution this week.
+2. The verdict correctly established the objective facts: the repo is active (a
+   commit 4 days old), nobody has claimed or opened a PR against the issue, the fix
+   is scoped to three named files with one clear goal (clear the cache/session state
+   on `run`), and there's no policy blocking AI-assisted work. What the rubric
+   couldn't weigh is which *specific* skill I want reps on right now: I picked #15
+   over the other accepted issues (a new dependency-audit tool, a new streak-counter
+   tool) because debugging a stateful lifecycle bug in an existing orchestrator is
+   closer to what breaks in real agent deployments than building a new green-field
+   tool, and `fits-my-profile` can only match language/subject, not rank which kind
+   of task teaches me the most.
+3. Since assignees, comments, and linked PRs are all empty, claiming itself should be
+   uncontested, and the Path Review house rule means even a classmate's claim comment
+   wouldn't block me. The real difficulty is in the fix, not the claim: there's no
+   repro script given, so before touching `context_manager.py` or `session_store.py`
+   I'll need to write my own two-review repro to confirm which cached keys survive
+   across `Orchestrator.run` calls.
 
 ---
 
