@@ -50,6 +50,25 @@ Next: scope `ContextManager`'s cache per profile (or reset it at the start of `r
 and add the missing `session_store.delete(profile_id)` call before a run's plan
 executes.
 
+-live mode JSON output: 
+```
+{
+  "item": "https://github.com/codepath/pathreview-ai301-fa26-s3/issues/15",
+  "checks": [
+    {"name": "Environment recorded", "grade": "pass", "evidence": "Commit 2f4e82f52efbcfcc57d65b3fa5348672163ca088 (verified in git log), Python 3.12.8, redis==8.1.0, structlog==26.1.0, macOS Darwin 23.6.0 all named"},
+    {"name": "Steps reproducible from a stated start", "grade": "pass", "evidence": "fork+clone -> venv -> make setup (confirmed target exists) -> save script -> `python3.12 repro_issue_15.py`, exact command given"},
+    {"name": "Expected vs actual stated", "grade": "pass", "evidence": "Expected: call_count==2, distinct data; Actual: call_count stayed 1, identical result, delete_calls==[]"},
+    {"name": "Artifact backs the actual", "grade": "pass", "evidence": "Pasted stdout shows `market_analyzer call_count: 1`, `tool_cache_hit tool=market_analyzer`, `redis DELETE calls across both runs: []` verbatim"},
+    {"name": "Behavior matches the issue's target", "grade": "pass", "evidence": "Issue: one orchestrator, two reviews, stale result for unchanged-input tool + session never cleared; repro reproduces both halves with a control tool ruling out an adjacent bug"},
+    {"name": "Outcome stated honestly", "grade": "pass", "evidence": "\"Reproduced\" and \"Root cause\" claims are both backed by cited, code-verified line numbers (orchestrator.py:127/30, context_manager.py:26, session_store.py:68) and the pasted log"},
+    {"name": "Claim comment states specific, honest intent", "grade": "pass", "evidence": "Names exact mechanism found and a concrete next step (scope cache per profile; add session_store.delete(profile_id)); no delivery date or unearned certainty"},
+    {"name": "AI-use disclosure follows repo policy", "grade": "pass", "evidence": "No AI-disclosure requirement found in CONTRIBUTING.md, PR template, README, or issue templates"}
+  ],
+  "verdict": "accept"
+}
+
+```
+
 **Reproduction comment**
 
 [Link to the comment where you posted your reproduction. It must record the environment
