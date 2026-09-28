@@ -179,12 +179,6 @@ Run it:
 python3.12 repro_issue_15.py
 ```
 
-`readme_scorer` is the control: each profile gets genuinely different `readme_content`,
-so its cache key differs and it correctly runs twice. `market_analyzer`'s input is
-hardcoded to `{"detected_skills": {}}` regardless of profile
-([agent/orchestrator.py:127](agent/orchestrator.py#L127)), so it deterministically
-collides across profiles without needing to contrive matching inputs by hand.
-
 ## Expected
 
 Calling `Orchestrator.run()` for a second, different profile should never return a
@@ -204,7 +198,7 @@ session state should start clean rather than inheriting profile A's stored keys.
   `tool_cache_hit tool=market_analyzer`.
 - `fake_redis.delete_calls` is `[]` after both runs — `SessionStore.delete()` is never
   invoked by `run()`, despite being fully implemented
-  ([agent/memory/session_store.py:68-81](agent/memory/session_store.py#L68-L81)).
+  `agent/memory/session_store.py:68-81`
 - All three `assert` statements in the script pass, i.e. the script completes and prints
   the final "Reproduced:" line rather than raising `AssertionError`.
 
