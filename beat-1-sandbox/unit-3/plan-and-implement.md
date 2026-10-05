@@ -79,7 +79,95 @@ the output of **checking my plan with my skills**
 [Your Unit 2 reproduction steps re-run against the built change: the before, then the
 after. Paste both, including the commands you ran and their output.]
 
+Command: `python3.12 repro_issue_15.py` (unmodified — same file from Unit 2).
 
+| | **Before fix** (`repro_report.md`) | **After fix** (re-run this session) |
+|---|---|---|
+| `market_analyzer` call_count | `1` | `2` |
+| profile A `market_analyzer` result | `{'call_number': 1}` | `{'call_number': 1}` |
+| profile B `market_analyzer` result | `{'call_number': 1}` (same as A — bug) | `{'call_number': 2}` (distinct) |
+| `redis DELETE calls across both runs` | `[]` | `['session:profile-A', 'session:profile-B']` |
+| structlog line for profile B's `market_analyzer` call | `tool_result_cache_hit` / `tool_cache_hit` | `tool_result_cache_miss` + `session_deleted session_id=profile-B` |
+| script outcome | all asserts pass, prints `"Reproduced: ..."` | raises `AssertionError` on the assert that encodes the bug |
+
+Actual before-fix run: 
+
+```
+(.venv) ~@Jins-MBP pathreview-ai301-fa26-s3 % pip install -q redis structlog
+(.venv) ~@Jins-MBP pathreview-ai301-fa26-s3 % python3.12 repro_issue_15.py  
+2026-09-27 20:24:46 [info     ] orchestrator_start             profile_id=profile-A
+2026-09-27 20:24:46 [info     ] plan_built                     plan_size=2
+2026-09-27 20:24:46 [info     ] session_not_found              session_id=profile-A
+2026-09-27 20:24:46 [info     ] tool_result_cache_miss         key=readme_scorer:23d92bf1d91da35e00cc3595a78bc3c647a1fa962589737008469dd3a0dd611d tool=readme_scorer
+2026-09-27 20:24:46 [info     ] tool_result_stored             key=readme_scorer:23d92bf1d91da35e00cc3595a78bc3c647a1fa962589737008469dd3a0dd611d tool=readme_scorer
+2026-09-27 20:24:46 [info     ] tool_executed                  success=True tool=readme_scorer
+2026-09-27 20:24:46 [info     ] tool_result_cache_miss         key=market_analyzer:95e4a8f9276c0150ec6978a4ef9d9a2cac4d341eeaa23a74725f91d9eea97930 tool=market_analyzer
+2026-09-27 20:24:46 [info     ] tool_result_stored             key=market_analyzer:95e4a8f9276c0150ec6978a4ef9d9a2cac4d341eeaa23a74725f91d9eea97930 tool=market_analyzer
+2026-09-27 20:24:46 [info     ] tool_executed                  success=True tool=market_analyzer
+2026-09-27 20:24:46 [info     ] session_stored                 session_id=profile-A ttl_seconds=3600
+2026-09-27 20:24:46 [info     ] orchestrator_complete          profile_id=profile-A tools_executed=2
+2026-09-27 20:24:46 [info     ] orchestrator_start             profile_id=profile-B
+2026-09-27 20:24:46 [info     ] plan_built                     plan_size=2
+2026-09-27 20:24:46 [info     ] session_not_found              session_id=profile-B
+2026-09-27 20:24:46 [info     ] tool_result_cache_miss         key=readme_scorer:d3e05b1e701b424dfc6262693fe91f534632ed2bf752d2bc70c7530abc7561a3 tool=readme_scorer
+2026-09-27 20:24:46 [info     ] tool_result_stored             key=readme_scorer:d3e05b1e701b424dfc6262693fe91f534632ed2bf752d2bc70c7530abc7561a3 tool=readme_scorer
+2026-09-27 20:24:46 [info     ] tool_executed                  success=True tool=readme_scorer
+2026-09-27 20:24:46 [info     ] tool_result_cache_hit          key=market_analyzer:95e4a8f9276c0150ec6978a4ef9d9a2cac4d341eeaa23a74725f91d9eea97930 tool=market_analyzer
+2026-09-27 20:24:46 [info     ] tool_cache_hit                 tool=market_analyzer
+2026-09-27 20:24:46 [info     ] tool_executed                  success=True tool=market_analyzer
+2026-09-27 20:24:46 [info     ] session_stored                 session_id=profile-B ttl_seconds=3600
+2026-09-27 20:24:46 [info     ] orchestrator_complete          profile_id=profile-B tools_executed=2
+readme_scorer call_count: 2
+market_analyzer call_count: 1
+profile A market_analyzer result: {'call_number': 1}
+profile B market_analyzer result: {'call_number': 1}
+profile A readme_scorer result: {'call_number': 1}
+profile B readme_scorer result: {'call_number': 2}
+redis DELETE calls across both runs: []
+
+Reproduced: profile B silently received profile A's cached market_analyzer result, and no session state was ever deleted.
+```
+
+
+Actual after-fix run:
+```
+(.venv) jinxu@Jins-MBP pathreview-ai301-fa26-s3 % python3.12 repro_issue_15.py                                   
+2026-10-04 22:33:05 [info     ] orchestrator_start             profile_id=profile-A
+2026-10-04 22:33:05 [info     ] plan_built                     plan_size=2
+2026-10-04 22:33:05 [info     ] session_deleted                session_id=profile-A
+2026-10-04 22:33:05 [info     ] tool_result_cache_miss         key=readme_scorer:23d92bf1d91da35e00cc3595a78bc3c647a1fa962589737008469dd3a0dd611d tool=readme_scorer
+2026-10-04 22:33:05 [info     ] tool_result_stored             key=readme_scorer:23d92bf1d91da35e00cc3595a78bc3c647a1fa962589737008469dd3a0dd611d tool=readme_scorer
+2026-10-04 22:33:05 [info     ] tool_executed                  success=True tool=readme_scorer
+2026-10-04 22:33:05 [info     ] tool_result_cache_miss         key=market_analyzer:95e4a8f9276c0150ec6978a4ef9d9a2cac4d341eeaa23a74725f91d9eea97930 tool=market_analyzer
+2026-10-04 22:33:05 [info     ] tool_result_stored             key=market_analyzer:95e4a8f9276c0150ec6978a4ef9d9a2cac4d341eeaa23a74725f91d9eea97930 tool=market_analyzer
+2026-10-04 22:33:05 [info     ] tool_executed                  success=True tool=market_analyzer
+2026-10-04 22:33:05 [info     ] session_stored                 session_id=profile-A ttl_seconds=3600
+2026-10-04 22:33:05 [info     ] orchestrator_complete          profile_id=profile-A tools_executed=2
+2026-10-04 22:33:05 [info     ] orchestrator_start             profile_id=profile-B
+2026-10-04 22:33:05 [info     ] plan_built                     plan_size=2
+2026-10-04 22:33:05 [info     ] session_deleted                session_id=profile-B
+2026-10-04 22:33:05 [info     ] tool_result_cache_miss         key=readme_scorer:d3e05b1e701b424dfc6262693fe91f534632ed2bf752d2bc70c7530abc7561a3 tool=readme_scorer
+2026-10-04 22:33:05 [info     ] tool_result_stored             key=readme_scorer:d3e05b1e701b424dfc6262693fe91f534632ed2bf752d2bc70c7530abc7561a3 tool=readme_scorer
+2026-10-04 22:33:05 [info     ] tool_executed                  success=True tool=readme_scorer
+2026-10-04 22:33:05 [info     ] tool_result_cache_miss         key=market_analyzer:95e4a8f9276c0150ec6978a4ef9d9a2cac4d341eeaa23a74725f91d9eea97930 tool=market_analyzer
+2026-10-04 22:33:05 [info     ] tool_result_stored             key=market_analyzer:95e4a8f9276c0150ec6978a4ef9d9a2cac4d341eeaa23a74725f91d9eea97930 tool=market_analyzer
+2026-10-04 22:33:05 [info     ] tool_executed                  success=True tool=market_analyzer
+2026-10-04 22:33:05 [info     ] session_stored                 session_id=profile-B ttl_seconds=3600
+2026-10-04 22:33:05 [info     ] orchestrator_complete          profile_id=profile-B tools_executed=2
+readme_scorer call_count: 2
+market_analyzer call_count: 2
+profile A market_analyzer result: {'call_number': 1}
+profile B market_analyzer result: {'call_number': 2}
+profile A readme_scorer result: {'call_number': 1}
+profile B readme_scorer result: {'call_number': 2}
+redis DELETE calls across both runs: ['session:profile-A', 'session:profile-B']
+Traceback (most recent call last):
+  File "/Users/jinxu/pathreview-ai301-fa26-s3/repro_issue_15.py", line 65, in <module>
+    assert market_tool.call_count == 1, "BUG: market_analyzer's identical hardcoded input should be a cache miss per profile, but only ran once total"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: BUG: market_analyzer's identical hardcoded input should be a cache miss per profile, but only ran once total
+```
+This `AssertionError` is the **expected, correct** result — that assert was written to encode the buggy behavior (`call_count == 1`), so it must now fail. The script no longer reaches the `"Reproduced: ..."` print, confirming the bug is gone.
 
 
 ## Eval iterations
@@ -93,11 +181,12 @@ fields.
 only one run occurred. **The last score in your list must match the agreement line in the
 `eval-run.txt` you committed** — that file is the record of your final run.]
 
-3 runs consistently getting 18/20 
+1. 19/20
+2. 19/20
 
-re-run eval for the packages that is not agreed with gold label with `--only pkg-14` and revise the rubric. 
-
-final run save to eval-run.txt
+Both runs agreed on 19/20; the only disagreement was `pkg-14` (gold accept, rubric reject,
+failed `executable`). I re-ran it with `--only pkg-14` and got the same result. The second
+run is saved to `eval-run.txt` (agreement: 19/20 scored items, bar 18/20: PASS).
 
 
 **Package analysis**
