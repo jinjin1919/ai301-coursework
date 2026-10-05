@@ -48,7 +48,8 @@ Separately, `SessionStore.delete()` (`agent/memory/session_store.py:68-81`) is f
 
 Will open a PR with this change.
 
-- the out put of **checking my plan with my skills**
+---
+the output of **checking my plan with my skills**
 ```
 {
   "item": "https://github.com/codepath/pathreview-ai301-fa26-s3/issues/15",
