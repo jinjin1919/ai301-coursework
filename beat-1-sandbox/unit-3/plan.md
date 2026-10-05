@@ -46,10 +46,37 @@ Two bugs in `Orchestrator`, both causing stale state across profiles:
 3. No changes to `SessionStore` or tool implementations needed.
 
 ### Test plan
-Re-run the Unit 2 repro, expected results after the fix:
-1. `python3.12 repro_issue_15.py` (unmodified) — now **fails** at `assert market_tool.call_count == 1, "BUG: ..."` since it will be `2`. That failure is the expected, correct outcome (today it passes and prints "Reproduced: ...").
-2. New `tests/unit/test_orchestrator.py`, adapted from the repro's `FakeRedis`/`CountingTool` doubles, asserting the fixed behavior: `market_tool.call_count == 2`, `result_a[...] != result_b[...]` for `market_analyzer`, `fake_redis.delete_calls == ["session:profile-A", "session:profile-B"]`, and `readme_scorer` control still `== 2`.
-3. `pytest` (full suite) — no regressions, since nothing else references `Orchestrator`/`ContextManager`.
+
+#### Unit 2 repro script rerun, before vs. after
+
+Command: `.venv/bin/python repro_issue_15.py` (unmodified — same file from Unit 2).
+
+| | **Before fix** (`repro_report.md`) | **After fix** (re-run this session) |
+|---|---|---|
+| `market_analyzer` call_count | `1` | `2` |
+| profile A `market_analyzer` result | `{'call_number': 1}` | `{'call_number': 1}` |
+| profile B `market_analyzer` result | `{'call_number': 1}` (same as A — bug) | `{'call_number': 2}` (distinct) |
+| `redis DELETE calls across both runs` | `[]` | `['session:profile-A', 'session:profile-B']` |
+| structlog line for profile B's `market_analyzer` call | `tool_result_cache_hit` / `tool_cache_hit` | `tool_result_cache_miss` + `session_deleted session_id=profile-B` |
+| script outcome | all asserts pass, prints `"Reproduced: ..."` | raises `AssertionError` on the assert that encodes the bug |
+
+Actual after-fix run:
+```
+readme_scorer call_count: 2
+market_analyzer call_count: 2
+profile A market_analyzer result: {'call_number': 1}
+profile B market_analyzer result: {'call_number': 2}
+profile A readme_scorer result: {'call_number': 1}
+profile B readme_scorer result: {'call_number': 2}
+redis DELETE calls across both runs: ['session:profile-A', 'session:profile-B']
+Traceback (most recent call last):
+  File "repro_issue_15.py", line 65, in <module>
+    assert market_tool.call_count == 1, "BUG: market_analyzer's identical hardcoded input should be a cache miss per profile, but only ran once total"
+AssertionError: BUG: market_analyzer's identical hardcoded input should be a cache miss per profile, but only ran once total
+```
+This `AssertionError` is the **expected, correct** result — that assert was written to encode the buggy behavior (`call_count == 1`), so it must now fail. The script no longer reaches the `"Reproduced: ..."` print, confirming the bug is gone.
+
+
 
 ### Risks and Unknowns
 - Clearing the whole cache per run (vs. per-profile keys) also drops same-run cache sharing between tools — not used today, so low risk.
