@@ -54,7 +54,7 @@ happened; these entries are the toolkit's own timeline.
 All four entries are graded. Keep every heading below, and fill each
 one in the week it belongs to.
 
-**Unit 5: [one line on the tool work]**
+**Unit 5: Built issue scount skill with search strategy and fit profile**
 
 
 I built the issue scout skill with search strategy and my fit profile for ranking the scan and grade the 3 issues I chose from `AI301 Issue Selection site`. 
@@ -63,7 +63,7 @@ but comments or claim are okay but prefer no claims.
 
 
 
-**Unit 6: [one line on the tool work]**
+**Unit 6: built voice-guard hook and use hook to pass or stop comment upstream**
 
 [2-4 sentences: the voice-guard, the repo-memory file. What broke or
 fell short, and what changed because of it. "Nothing broke" counts when
@@ -72,10 +72,27 @@ it is true - say how you know.]
 I wrote the voice-guard based on the lectures'drafting wrong/right example. and at the beginning my hook was not able to fire because my python version caused the check_voice.py command fail to run. and the hook was return 500 error. It turns out python3.19 up version is required. 
 I graded my claim-draft with my repro-check twice and revised according to its fix comments and submitted my claim through claude code. so it was an iterative improvement. 
 
-**Unit 7: [one line on the tool work]**
+**Unit 7: installed the ship-gate hook and wrote ship-manifest.md for datafusion-comet**
 
-[2-4 sentences: the ship-gate and your gate manifest. What it produced
-on your real branch, what fought you, what changed because of it.]
+My ship-manifest.md lists three checks, each taken from the repo's own
+contributor guide and CI files: `cargo fmt --check`, clippy on the
+`datafusion-comet-spark-expr` crate, and the `hash_funcs` tests. Four
+checks are excluded with a dated reason: `make format` rewrites files,
+workspace clippy fails because `protoc` isn't installed on my machine,
+and the full `make` and the strict Scala build cover code this PR
+doesn't touch. On my real branch the three checks passed every time,
+but the gate still blocked me four times: once because the branch had
+no diff against `main`, once because my pr-precheck found plan.md
+empty, once because my `gh pr create` passed `$B` as the body file and
+the shell never expanded it, and once because my PR description
+claimed "3 of 4 mutants caught" with no evidence behind it. I filled in
+plan.md, fixed the body-file path and removed the unsupported mutant
+claim, and the gate passed on 2026-11-07. One note it kept repeating
+was still unfixed at that point: my description said workspace clippy
+was clean, which contradicts my own manifest.
+
+
+
 
 **Unit 8: [one line on the tool work]**
 
