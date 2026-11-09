@@ -65,9 +65,6 @@ but comments or claim are okay but prefer no claims.
 
 **Unit 6: built voice-guard hook and use hook to pass or stop comment upstream**
 
-[2-4 sentences: the voice-guard, the repo-memory file. What broke or
-fell short, and what changed because of it. "Nothing broke" counts when
-it is true - say how you know.]
 
 I wrote the voice-guard based on the lectures'drafting wrong/right example. and at the beginning my hook was not able to fire because my python version caused the check_voice.py command fail to run. and the hook was return 500 error. It turns out python3.19 up version is required. 
 I graded my claim-draft with my repro-check twice and revised according to its fix comments and submitted my claim through claude code. so it was an iterative improvement. 
