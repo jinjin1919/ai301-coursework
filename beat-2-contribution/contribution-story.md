@@ -94,10 +94,10 @@ was clean, which contradicts my own manifest.
 
 
 
-**Unit 8: [one line on the tool work]**
+**Unit 8: installed pr-monitor hook and ran playbook checks**
 
-[2-4 sentences: the PR-monitor and your playbook. What it read, what it
-drafted, what you did with the draft.]
+the first PR-monitor run report shows 1 failed checks for CI workflow, PR will need green state for Comet CI workflow checks in order to move to code review. 
+so I ran the rebase plan, and enabled GitHub Actions on my fork to run the CI workflow checks. 
 
 ---
 
@@ -618,10 +618,28 @@ adapts into it]
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: pr-monitor hook
+- What it produced: drafted-move.md and run-report.md under ./claude/pr-monitor folder. 
+
+```
+# PR-monitor run report (2026-11-08 20:03)
+
+- run at: 2026-11-09T01:03:55Z
+- PR: https://github.com/apache/datafusion-comet/pull/7569 ('refactor: factor out map-entry hashing loops into `hash_map_entries!`')
+- branch: refactor/6984-map-entry-hashing -> main
+- opened: 2026-11-08T03:26:04Z (under a day ago)
+- last activity: 2026-11-09T00:34:15Z (under a day ago)
+- checks: 1 pending
+- mergeable: MERGEABLE (merge state BLOCKED)
+- review decision: REVIEW_REQUIRED
+- thread: 0 comment(s)/review(s)
+- state: QUIET: the thread is quiet: under a day since the last activity by anyone but you
+
+```
+
+- Difficulties: rebase the plan, and rerun all the benchmark tests again after rebase. fortunately the files I touched for this pr is not touched after rebase. 
+
+- What changed:  first pr-monitor run showed 1 failed checks for Comet CI workflow checks are not running because my fork branch is 50 commits behind. ran rebase plan. and the CI workflow invoked after force--with-lease push. 
 
 ---
 
