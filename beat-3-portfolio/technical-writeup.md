@@ -1,20 +1,31 @@
-# The open-source apache project PR got merged after revising the test code according to maintainer feedback for adding another test. 
+# My first Apache PR: refactoring Spark-compatible map hashing in DataFusion Comet
 
 ## Overview
-https://github.com/apache/datafusion-comet/pull/7569 
 
-The issue is factoring out a map-entry hashing loop: the map arm sits inside a rust macro repeats a null-aware loops four times for each pair (Utf8, Int32), (Int32, Utf8), (Utf8, Utf8) and (Int32, Int32), differing only in the downcast type and .to_le_bytes() on the integer side. 
+PR: https://github.com/apache/datafusion-comet/pull/7569 (part of issue #6984)
 
-since comet is Spark accelerator, so the challenge is in the test. after refactoring, I need to compare the rust native hashing match Spark result. I ran baseline benchmark test before refactoring and after refactoring to make sure the refactor doesn't degrade the performance. 
+Apache DataFusion Comet speeds up Apache Spark by running Spark operations in native Rust code instead of on the JVM. Because it replaces Spark's own code, its results must match Spark exactly, including hash values.
+
+In `native/spark-expr/src/hash_funcs/utils.rs`, the Map arm of the `create_hashes_internal!` macro had the same hashing loop written out by hand four times, once for each (key, value) type pair: (Utf8, Int32), (Int32, Utf8), (Utf8, Utf8) and (Int32, Int32). Each copy had two loops: a fast loop for input with no nulls and a null-aware loop. That made eight loops that differed only in the array types and in whether an Int32 side went through `.to_le_bytes()` first. I replaced them with one `hash_map_entries!` macro, based on the `hash_list_primitive!` macro already in the same file. The change was 45 lines added and 100 removed in `utils.rs`.
+
+Writing the code was the easy part. The hard part was proving that the hash results did not change and still matched Spark.
 
 ## What happened
-I ran repo existing cargo test before and after the refactoring to make sure after refactor the repo test suite still passes. checked inlining and performance benchmark test compared before and after, submitted my first commit after confirming the refactor produced the same result. the proof is in pr_claim 
+**Checking whether the existing tests would catch a mistake.** Before changing anything, I broke the (Int32, Int32) arm on purpose. Swapping the key and value order in the fast loop still passed all 94 existing tests, and so did removing the null-map check. The existing map tests only covered xxhash64 and only the null-aware loop. So "tests still pass" would not have proved my refactor was correct.
 
-the review comment asked me to change the added test `test_specialized_map_pairs_match_spark`, because it adds about 100 lines of hardcoded murmur3 and xxhash64 constants. and suggested me to move hardcoded hash constants into SQL `expressions/hash/hash.sql` so no constants would be in sync. and asked me to confirm whether a parquet map column would reach the null-free fast loop. and suggested a test cover hash a sliced map, for example array.slice(1, n), and compare with the tail of the expected vector. 
+**Testing against Spark itself.** I wrote a test covering all four pairs for both murmur3 and xxhash64, through both loops. Its expected values came from running Spark 4.1.3's own `Murmur3Hash` and `XxHash64`, not from Comet's output. I confirmed that it failed on both of my deliberate breakages and passed on `main`.
 
-so I made changes according to above feedback from the maintainer review: confirmed parquet map reaches the null-free fast loop and added the test that hashes the sliced map `test_specialised_map_slice_matches_unsliced` it checks that a sliced map, whose offsets do not start at 0, hashes like the same rows of the unsliced array, in both fast loop and the null-aware loop.
+**Checking that performance didn't change.** The before and after benchmark timings on my Mac varied from -61% to +213%, which was too noisy to tell me anything. Instead, I built the release benchmark binary from the old code and from the refactored code. The two were byte-identical (same SHA-256). That means every closure passed to the macro was inlined, and the compiled code is exactly what the hand-written loops produced.
 
-In the end, the pr got approved by the maintainer review and merged to `main`. 
+**Review and revision.** @comphead compared the old arms with the macro expansion and found no behavior change. They made three requests:
+
+1. Move the ~100 lines of hardcoded murmur3/xxhash64 values out of the Rust test and into the SQL tests in `expressions/hash/hash.sql`, so Spark computes the expected values at run time and nothing has to be kept in sync by hand.
+2. Confirm whether a Parquet map column would reach the null-free fast loop.
+3. Add a test that hashes a sliced map (for example `array.slice(1, n)`).
+
+I made all three changes. The `hash.sql` cases now compare all four pairs against Spark in both the null-free and null-aware shapes. I confirmed the Parquet case. I also added `test_specialised_map_slice_matches_unsliced`, which checks that a sliced map hashes the same as the matching rows of the unsliced array, in both loops. This matters because the macro reads keys and values through offsets that don't start at 0 after slicing, and nothing tested that before. I also added `test_specialised_map_null_row_skips_owned_entries`, which checks that a null map row that still holds an entry is skipped.
+
+**Merged.** All 96 Rust hash tests passed and all 24 CI checks passed. @andygrove approved the PR ("LGTM") and merged it into `main` through the merge queue.
 
 
 ## Limitations and what's next
