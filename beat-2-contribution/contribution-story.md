@@ -609,9 +609,10 @@ adapts into it]
 **Maintainer Feedback:**
 
 - [2026-11-08]: "none yet"
+- [2026-11-12]: "approved"
+- [2026-11-13]: "merged"
 
-
-**Status:** [Awaiting review]
+**Status:** [Merged]
 
 **Toolkit**
 
