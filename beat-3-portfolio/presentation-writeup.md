@@ -1,9 +1,7 @@
 # My first Apache PR: refactoring Spark-compatible map hashing in DataFusion Comet
 
-**Length:** about 5.5 minutes, 7 slides (~800 spoken words at ~145 words per minute)
 **PR:** https://github.com/apache/datafusion-comet/pull/7569 (part of issue #6984)
 
-Each slide below has **On screen** (what to show) and **Say** (the script). Times are cumulative.
 
 ---
 
