@@ -111,9 +111,4 @@ Result: 96 Rust tests pass, 24/24 CI checks pass, approved ("LGTM") and merged
 
 ---
 
-## Backup: likely questions
 
-- **Why a macro and not a generic function?** The issue offered both. The code is called from inside `create_hashes_internal!`, which is itself a macro, and macros are expanded in place, so there's no question about inlining. The identical binaries confirmed it.
-- **Why not just trust the existing xxhash64 map tests?** They only went through the null-aware loop and only for xxhash64. My deliberate breakages in the fast loop passed them.
-- **How did you get Spark's hash values?** A small Java program that called Spark 4.1.3's `Murmur3Hash` and `XxHash64` from the Spark jars, with seed 42. After review, the `hash.sql` tests do this at run time instead.
-- **How did you use AI?** Claude Code explained the Rust macros piece by piece and ran the tests and binary comparison. Each time I asked it how to check its answer, which is where the deliberate breakages and the binary comparison came from.
